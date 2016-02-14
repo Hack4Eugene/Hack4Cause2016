@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html ng-app="fifteenApp" ng-controller="PageController">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<!-- build:css styles/styles.css -->
+		<!-- bower:css -->
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.css" />
+		<link rel="stylesheet" href="bower_components/AdminLTE/dist/css/AdminLTE.css" />
+		<link rel="stylesheet" href="bower_components/AdminLTE/dist/css/skins/skin-green.min.css" />
+		<link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
+		<!-- endbower -->
+		<link rel="stylesheet" href="styles/styles.css" />
+		<!-- endbuild -->
+		<!-- endcss -->
+		<!-- build:js js/app.js -->
+		<!-- bower:js -->
+		<script src="bower_components/angular/angular.js"></script>
+		<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+		<script src="bower_components/jquery/dist/jquery.js"></script>
+		<script src="bower_components/bootstrap/js/dropdown.js"></script>
+		<script src="bower_components/bootstrap/js/collapse.js"></script>
+		<script src="bower_components/AdminLTE/dist/js/app.js"></script>
+		<script src="bower_components/underscore/underscore.js"></script>
+		<script src="bower_components/angular-resource/angular-resource.js"></script>
+		<script src="bower_components/jquery-ui/jquery-ui.js"></script>
+		<script src="bower_components/angular-ui-mask/dist/mask.js"></script>
+		<script src="bower_components/moment/moment.js"></script>
+		<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+		<!-- endbower -->
+		<script src="js/app.js"></script>
+		<script src="js/services/lb-services.js"></script>
+		<script src="js/services/data-manager.js"></script>
+		<script src="js/services/utility.js"></script>
+		<script src="js/controllers/root.js"></script>
+		<script src="js/controllers/page.js"></script>
+		<script src="js/controllers/login.js"></script>
+		<script src="js/controllers/logout.js"></script>
+		<script src="js/controllers/dashboard.js"></script>
+		<script src="js/controllers/calls.js"></script>
+		<script src="js/controllers/call.detail.js"></script>
+		<script src="js/controllers/providers.js"></script>
+		<script src="js/controllers/provider.edit.js"></script>
+		<script src="js/controllers/settings.js"></script>
+		<!-- endbuild -->
+		<!-- endapp -->
+		<title>15th Night Messenger</title>
+	</head>
+	<body ng-class="isState('login') ? 'login-page' : 'skin-green sidebar-mini'">
+		<div ng-if="isState('login')" ui-view></div>
+		<div class="wrapper" ng-if="!isState('login')">
+			<header class="main-header">
+				<a ui-sref="dashboard" class="logo">
+					<span class="logo-mini">15th</span>
+					<span class="logo-lg">15th Night</span>
+				</a>
+				<nav class="navbar navbar-static-top" role="navigation">
+					<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+						<span class="sr-only">Toggle navigation</span>
+					</a>
+					<div class="navbar-custom-menu">
+						<ul class="nav navbar-nav">
+							<li><a ui-sref="logout">Sign out</a></li>
+						</ul>
+					</div>
+				</nav>
+			</header>
+			<aside class="main-sidebar">
+				<section class="sidebar">
+					<ul class="sidebar-menu">
+						<li><a ui-sref="dashboard"><i class="fa fa-envelope-o"></i> Messaging</a></li>
+						<li><a ui-sref="calls"><i class="fa fa-phone"></i> Call History</a></li>
+						<li><a ui-sref="providers"><i class="fa fa-life-ring"></i> Providers</a></li>
+						<li><a ui-sref="settings"><i class="fa fa-gear"></i> Settings</a></li>
+					</ul>
+				</section>
+			</aside>
+			<div class="content-wrapper" ui-view></div>
+		</div>
+	</body>
+</html>
