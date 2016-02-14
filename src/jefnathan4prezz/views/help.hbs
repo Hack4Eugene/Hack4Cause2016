@@ -1,0 +1,21 @@
+<h3>Information</h3>
+<p>{{info}}</p>
+<form id="close" action="close" method="post">
+	<input name="phone" type="hidden" value="{{phone}}">
+	<input name="email" type="hidden" value="{{email}}">
+	<input class="btn btn-lg btn-primary" type="submit" value="YES, I CAN HELP!" color="green">
+	<button class="btn btn-lg btn-warning" onclick="window.close();">I can't help.</button>
+</form>
+
+<script>
+var getToken = function(source){
+	var components = (source.split('/'));
+	return components[components.length-1];
+}
+
+console.log(getToken(window.location.href))
+$('#close').attr(
+	"action", 
+	$('#close').attr('action') + "/" + getToken(window.location.href)
+)
+</script>
