@@ -1,0 +1,75 @@
+[{
+	"jan": [{
+		"total_users": 1001,
+		"total_reports": 90,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"feb": [{
+		"total_users": 1021,
+		"total_reports": 89,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"march": [{
+		"total_users": 1071,
+		"total_reports": 90,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"april": [{
+		"total_users": 1091,
+		"total_reports": 100,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"may": [{
+		"total_users": 1131,
+		"total_reports": 120,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"june": [{
+		"total_users": 1151,
+		"total_reports": 125,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"july": [{
+		"total_users": 1191,
+		"total_reports": 140,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"aug": [{
+		"total_users": 1211,
+		"total_reports": 160,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"sept": [{
+		"total_users": 1241,
+		"total_reports": 170,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"oct": [{
+		"total_users": 1251,
+		"total_reports": 141,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"nov": [{
+		"total_users": 1161,
+		"total_reports": 105,
+		"average_impact": 2,
+		"average_type": "transient"
+	}],
+	"dec": [{
+		"total_users": 1171,
+		"total_reports": 70,
+		"average_impact": 2,
+		"average_type": "transient"
+	}]
+
+}]

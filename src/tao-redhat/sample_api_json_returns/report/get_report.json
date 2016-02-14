@@ -1,0 +1,22 @@
+{
+	"report": {
+		"id": 789,
+		"reported_by_user": 123,
+		"lat": 44.049776,
+		"lng": -123.0909595,
+		"type": "transient",
+		"date_created": "Sat Jan 30 2016 17:01:01 GMT-0800 (PST)",
+		"impact": "1",
+		"images": "",
+		"follow_ups": [{
+			"date_added": "Sat Jan 30 2016 17:05:01 GMT-0800 (PST)",
+			"follow_up_data": "So there was some guy out front. Asian guy. Not that I am racisit! Handsome guy. About 5 foot 6. He was screaming about a chicken cake.",
+			"follow_up_images": ""
+		}, {
+			"date_added": "Sat Jan 30 2016 17:05:10 GMT-0800 (PST)",
+			"follow_up_data": "oh yeah and he told me he was a not developer or a marketer.",
+			"follow_up_images": "",
+			"ignore":true
+					}]
+	}
+}

@@ -1,0 +1,2 @@
+12      17      *       *       *       /var/www/html/infrastructure/mydumper.sh > /tmp/mydumper.log 2>&1
+16      17      *       *       *       /usr/local/bin/node /var/www/html/infrastructure/snapshotter.js > /tmp/snapshotter.log 2>&1

@@ -1,0 +1,17 @@
+{
+	"user": {
+		"id": 123,
+		"phone": 1234567890,
+		"phone_type": "android",
+		"email": "chickencake@bau.kim",
+		"first_name": "Bauski",
+		"last_name": "Kimmers",
+		"reports": "[789,321,543,009]",
+		"most_recent_reports": 789,
+		"create_date": "Sat Jan 30 2016 17:01:01 GMT-0800 (PST)",
+		"image": "",
+		"social_urls": ["tiwtter.com/Bauski", "facebook.com/Bauski"],
+		"enabled":true,
+		"ignores_count":999
+	}
+}
