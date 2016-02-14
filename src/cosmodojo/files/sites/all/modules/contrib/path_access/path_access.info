@@ -1,0 +1,15 @@
+name = Path Access
+description = Restrict access to any paths by user role
+package = Access control
+core = 7.x
+dependencies[] = chain_menu_access
+dependencies[] = path
+configure = admin/config/people/pathaccess
+files[] = path_access.module
+
+; Information added by drupal.org packaging script on 2013-02-25
+version = "7.x-1.0-beta2"
+core = "7.x"
+project = "path_access"
+datestamp = "1361785641"
+

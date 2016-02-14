@@ -1,0 +1,13 @@
+name = Entityform Panels
+description = Provides advanced panels integration for entity forms.
+core = 7.x
+package = Entityforms
+
+dependencies[] = entityform
+
+; Information added by Drupal.org packaging script on 2014-06-20
+version = "7.x-1.0-beta1"
+core = "7.x"
+project = "entityform_panels"
+datestamp = "1403269728"
+

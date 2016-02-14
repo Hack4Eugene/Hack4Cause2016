@@ -1,0 +1,140 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700,900%7CJosefin+Sans:400,600,700,300);
+
+/*ESTEBAN*/
+
+/* Colors
+ * #ffba00 // yellow
+ * #2e7ac7 // blue
+ * #61c93f // green
+ */
+
+
+/*h1 {
+	font-family: 'Lato' sans-serif !default;
+	font-weight: 700;
+	font-size: 1.8em;
+}*/
+
+.row h1 {
+	font-family: 'Lato' sans-serif !default;
+	font-weight: 900;
+	font-size: 1.8em;
+}
+
+ h1, h2, h3 {
+	font-family: 'Lato', sans-serif !default;
+	font-weight: 400;
+	font-size: 2.9em;
+} 
+
+p {
+	font-family: 'Josefin Sans', "Arial Narrow", Arial, sans-serif;
+	font-weight: 400;
+	font-size: 1.5em;
+	letter-spacing: 0.02em;
+	line-height: 2em;
+}
+
+/* EVENTS PAGE COPY */
+tbody a {
+	font-family: 'Josefin Sans', "Arial Narrow", Arial, sans-serif;
+	font-weight: 400;
+	font-size: 1.2em;
+	color: ;
+}
+
+tbody p {
+	font-family: 'Josefin Sans', "Arial Narrow", Arial, sans-serif;
+	font-weight: 400;
+	font-size: 1.2em;
+	color: ;
+}
+/*
+.views-field .views-field-event-type {
+	font-family: 'Josefin Sans', "Arial Narrow", Arial, sans-serif;
+	font-weight: 400;
+	font-size: 1.2em;
+	color: ;
+}*/
+
+
+/* NAVIGATION */
+
+.active-trail .active {
+	background-color: #fff;
+	min-height: 100px;
+}
+ 
+.active-trail .active a {
+	color: #2e7ac7;
+}
+
+
+.navbar {
+	min-width: 100%;
+	top: -20px;
+}
+
+.navbar-brand a {
+	padding-top: 5px;
+	margin-top: 15px;
+	vertical-align: bottom !important;
+}
+
+.navbar a {
+	font-family: 'Josefin Sans', "Arial Narrow", Arial, sans-serif !important;
+	font-weight: 400 !important;
+	font-size: 2.2em !important;
+	color: #fff !important;
+	text-transform: capitalize !important;
+	margin-left: 20%;
+}
+
+.navbar-default {
+	background-color: #2e7ac7;
+	min-height: 100px;
+} 
+
+
+
+/*a .logo {
+	width: 50px;
+}*/
+/*
+.logo {
+	width: 1em;
+} */
+
+
+/*
+* HEADER
+*/
+header {
+	position: absolute;
+	margin-top: 0px !important;
+	padding-left: 50px !important;
+	padding-right: 50px !important;
+	padding-top: 18px !important;
+}
+/*
+header.sticky {
+  font-size: 24px;
+  line-height: 48px;
+  height: 48px;
+  background: #61c93f;
+  text-align: left;
+  padding-left: 20px;
+}
+*/
+/*.footer-sponsor-list {
+	background-image: url("http://p1.pichost.me/i/15/1385688.jpg");
+	background-size: 1080px;
+	min-width: 100%
+	bottom: -100px !important;
+}*/
+.panels-flexible-row .panels-flexible-row-3-4 .panels-flexible-row-last .clearfix .row {
+	min-width: 100%
+}
+.footer .container {
+	padding-top: 0px;
+}

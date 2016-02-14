@@ -1,0 +1,16 @@
+name = cdojo_media
+core = 7.x
+package = Features
+dependencies[] = breakpoints
+dependencies[] = ctools
+dependencies[] = image
+dependencies[] = picture
+features[breakpoint_group][] = scale_200px_wide
+features[breakpoints][] = custom.user.all
+features[ctools][] = breakpoints:default_breakpoint_group:1
+features[ctools][] = breakpoints:default_breakpoints:1
+features[ctools][] = picture:default_picture_mapping:2
+features[features_api][] = api:2
+features[image][] = scale_200px_wide
+features[image][] = scale_200px_wide_x2
+features[picture_mapping][] = scale_200px_wide

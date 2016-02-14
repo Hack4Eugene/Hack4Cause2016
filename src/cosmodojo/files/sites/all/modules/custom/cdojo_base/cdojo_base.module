@@ -1,0 +1,79 @@
+<?php
+/**
+ * @file
+ * Code for the cdojo_base feature.
+ */
+
+include_once 'cdojo_base.features.inc';
+
+function cdojo_base_form_alter(&$form, &$form_state, $form_id){
+  if($form_id == 'user_register_form'){
+    $current_path = current_path();
+    if(strpos($current_path, 'volunteer') !== FALSE){
+      $volunteer_markup = '<h2>Become a Volunteer</h2>';
+      $volunteer_markup .= '<p>Volunteers are the lifeblood of our organization. If you are an industry professional, self-taught web-guru, educator, or general do-gooder, we would love to have you on board.</p>';
+      $volunteer_markup .= '<p>Our volunteers attend sessions and help budding programmers prepare for a bright future in today’s fastest growing industry (and build some really cool stuff along the way). You can make a positive impact on a child’s life by taking a couple of hours every week or month to share your expertise.</p>';
+      $volunteer_markup .= '<p>Mentoring is it’s own reward. Become a volunteer.</p>';
+      $volunteer_markup .= '<p>The first step to becoming a volunteer is to create an account below:</p>';
+      if(isset($form)){
+        $form['volunteer_markup'] = array(
+          '#type' => 'markup',
+          '#markup' => $volunteer_markup,
+          '#weight' => -11,
+        );
+      }
+
+
+
+    }
+    if (module_exists('devel_debug_log')) {
+      ddl(
+        array(
+          '$form' => $form,
+          '$form_state' => $form_state,
+          '$form_id' => $form_id,
+        ),
+        'cdojo_base_form_alter'
+      );
+    }
+  }
+
+}
+
+/** change access callback to use custom permission to keep role volunteer users from seeing the volunteer application link */
+function cdojo_base_menu_alter(&$items){
+  $items['eform/submit/%entityform_empty']['access callback'] = 'cdojo_base_volunteer_path_change';
+}
+
+/**
+ * @param $type
+ * @param $entity_form_empty
+ * @return bool
+ *
+ *  custom permission to keep role volunteer users from seeing the volunteer application link
+ */
+function cdojo_base_volunteer_path_change($type, $entity_form_empty){
+  return entityform_access($type, $entity_form_empty) && !user_has_role(5);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function cdojo_base_menu(){
+  $items['user/child-users'] = array(
+    'title' => 'Redirecting page',
+    'access callback' => TRUE,
+    'page callback' => '_cdojo_base_child_user_path_redirect',
+  );
+  return $items;
+}
+
+function _cdojo_base_child_user_path_redirect(){
+  global $user;
+  if(isset($user->uid)){
+    drupal_goto('user/' . $user->uid . '/subuser');
+  }
+  else{
+    drupal_goto('user/');
+  }
+}

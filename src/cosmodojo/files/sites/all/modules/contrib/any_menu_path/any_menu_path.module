@@ -1,0 +1,231 @@
+<?php
+/**
+ * @file
+ * Allows to add menu paths that don't exist on the site.
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function any_menu_path_permission() {
+  return array(
+    'administer any_menu_path' => array(
+      'title' => t('Administer Any Menu Paths'),
+      'description' => t('Bypass form validate via the Any Menu Paths module.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function any_menu_path_menu() {
+
+  $items['admin/config/content/any_menu_path'] = array(
+    'title' => 'Any Menu Path Override Listing',
+    'page callback' => 'any_menu_path_view_paths',
+    'description' => 'Administer the Any Menu Paths module.',
+    'access arguments' => array('administer any_menu_path'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_form_menu_edit_item_alter().
+ */
+function any_menu_path_form_menu_edit_item_alter(&$form, &$form_state, $form_id) {
+
+  // Check to see if user has permission to access this functionality.
+  if (user_access('administer any_menu_path')) {
+
+    $any_menus = variable_get('any_menu_path', array());
+    $mlid = $form['mlid']['#value'];
+
+    $form['any_menu_path_no_path_valid'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('No Path Validation'),
+      '#description' => t('If this is enabled, Drupal will allow you to enter any path (even non-existent ones).'),
+      '#weight' => -1,
+    );
+
+    // Set a few weights on the fields provided by core to group this option
+    // with the "Enabled" and "Expanded" checkboxes.
+    $form['link_title']['#weight'] = -5;
+    $form['link_path']['#weight'] = -3;
+
+    if ($mlid != 0) {
+      if (in_array($mlid, $any_menus)) {
+        $form['any_menu_path_no_path_valid']['#default_value'] = TRUE;
+      }
+    }
+
+    // Prepend the validate function.
+    array_unshift($form['#validate'], 'any_menu_path_menu_edit_item_before_validate');
+  }
+}
+
+/**
+ * Checks whether menu's validation mechanism should be circumvented.
+ */
+function any_menu_path_menu_edit_item_before_validate($form, &$form_state) {
+
+  $mlid = $form_state['values']['mlid'];
+  $any_menus = variable_get('any_menu_path', array());
+
+  if ($form_state['values']['any_menu_path_no_path_valid'] == 1) {
+    $form_state['complete form']['#submit'][] = 'any_menu_path_menu_edit_menu_submit';
+    $form_state['storage']['any_menu_path_link_path'] = $form_state['values']['link_path'];
+    if (!url_is_external($form_state['values']['link_path']) && !drupal_valid_path($form_state['values']['link_path'])) {
+      $form_state['values']['link_path'] = 'http://example.com';
+    }
+  }
+  else {
+    if (!empty($any_menus)) {
+      $index = array_keys($any_menus, $mlid);
+      if (!empty($index)) {
+        unset($any_menus[$index[0]]);
+        variable_set('any_menu_path', $any_menus);
+      }
+    }
+  }
+}
+
+/**
+ * Updates menu's path, with the one provided by the user.
+ */
+function any_menu_path_menu_edit_menu_submit($form, &$form_state) {
+
+  // Check to see if user has permission to access this functionality.
+  if (user_access('administer any_menu_path')) {
+
+    $menu = $form_state['values'];
+    $mlid = $form_state['values']['mlid'];
+    $link_path = $form_state['storage']['any_menu_path_link_path'];
+
+    $url_parsed = drupal_parse_url($link_path);
+
+    $original_link = db_select('menu_links', 'm')
+    ->fields('m', array('options'))
+    ->condition('mlid', $mlid)
+    ->execute()
+    ->fetchAssoc();
+
+    if (!empty($original_link['options'])) {
+      $options = unserialize($original_link['options']);
+    }
+    if (!empty($url_parsed['fragment'])) {
+      $options['fragment'] = $url_parsed['fragment'];
+    }
+    else {
+      unset($options['fragment']);
+    }
+    if (!empty($url_parsed['query'])) {
+      $options['query'] = $url_parsed['query'];
+    }
+    else {
+      unset($options['query']);
+    }
+
+    db_update('menu_links')
+    ->fields(array(
+        'link_path' => $url_parsed['path'] ? $url_parsed['path'] : '',
+        'options' => serialize($options),
+      ))
+    ->condition('mlid', $mlid)
+    ->execute();
+
+    $any_menus = variable_get('any_menu_path', array());
+
+    if (empty($any_menus)) {
+      $any_menus[] = $mlid;
+    }
+    else {
+      if (!in_array($mlid, $any_menus)) {
+        $any_menus[] = $mlid;
+      }
+    }
+    variable_set('any_menu_path', $any_menus);
+
+  }
+}
+
+
+/**
+ * A page where the user can view the overridden menu paths.
+ */
+function any_menu_path_view_paths() {
+
+  $rows = array();
+
+  $header = array(
+    array('data' => t('Menu Title'), 'sort' => 'asc'),
+    array('data' => t('Path')),
+    array('data' => t('Edit')),
+  );
+
+  $any_menus = variable_get('any_menu_path', array());
+
+  foreach ($any_menus as $mlid) {
+
+    $menu_items = db_select('menu_links', 'ml')
+    ->fields('ml', array('link_path', 'link_title'))
+    ->condition('mlid', $mlid)
+    ->execute();
+
+    foreach ($menu_items as $menu_item) {
+
+      $rows[] = array(
+        'data' => array(
+          check_plain($menu_item->link_title),
+          check_plain($menu_item->link_path),
+          l(t('edit'), 'admin/structure/menu/item/' . $mlid . '/edit', array('query' => drupal_get_destination())),
+        ),
+      );
+    }
+  }
+
+  $html = theme('table',
+    array(
+      'header' => $header,
+      'rows' => $rows,
+      'sticky' => TRUE,
+      'empty' => t('No menu links overridden with the Any Menu Path module...'),
+    )
+  );
+
+  return $html;
+}
+
+/**
+ * Implements hook_form_menu_overview_form_alter().
+ */
+function any_menu_path_form_menu_overview_form_alter(&$form) {
+  $form['#submit'][] = 'any_menu_path_form_menu_overview_submit';
+}
+
+/**
+ * A submit that sets the 'external' field of the overridden menu paths back to 1
+ * after the core menu module resets it after its validation.
+ */
+function any_menu_path_form_menu_overview_submit($form, &$form_state) {
+  $changed_menus = array();
+
+  foreach ($form_state['values'] as $key => $value) {
+    if (substr($key, 0, 5) === 'mlid:') {
+      $changed_menus[] = $form_state['values'][$key]['mlid'];
+    }
+  }
+
+  $any_menus = variable_get('any_menu_path', array());
+
+  foreach ($changed_menus as $mlid) {
+    if (in_array($mlid, $any_menus, FALSE)) {
+      db_update('menu_links')
+        ->fields(array('external' => 1))
+        ->condition('mlid', $mlid)
+        ->execute();
+    }
+  }
+}
+

@@ -1,0 +1,151 @@
+<?php
+/**
+ * @file
+ * Provides primary Drupal hook implementations.
+ *
+ * @author Jimmy Berry ("boombatower", http://drupal.org/user/214218)
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function subuser_switch_permission() {
+  return array(
+    'switch to subuser' => array(
+      'title' => t('Switch to subuser'),
+      'description' => t('Allows the user to switch (login as) to any of the subusers they have created.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function subuser_switch_menu() {
+  $items = array();
+
+  $items['subuser/switch/%user'] = array(
+    'title' => 'Subuser switch',
+    'page callback' => 'subuser_switch_user',
+    'page arguments' => array(2),
+    'access callback' => 'subuser_switch_user_access',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_user_operations().
+ */
+function subuser_switch_user_operations() {
+  return array(
+    'subuser_switch' => array(
+      'label' => t('Switch to user'),
+      'callback' => 'subuser_switch_user_operations_switch',
+    ),
+  );
+}
+
+/**
+ * Callback for subuser switch user operation.
+ */
+function subuser_switch_user_operations_switch(array $accounts) {
+  // Only process the first account since switching to multiple makes no sense.
+  if (($uid = current($accounts)) && ($account = user_load($uid)) && subuser_switch_user_access($account)) {
+    subuser_switch_user($account);
+  }
+}
+
+/**
+ * Check if the user has permission to switch the specified user.
+ *
+ * @param $account
+ *   The user account to switch to.
+ * @return
+ *   Boolean TRUE if the user has the 'switch to subuser' permission and is
+ *   attempting to switch to a child user or if the user is returning to their
+ *   account, otherwise FALSE.
+ */
+function subuser_switch_user_access($account) {
+  global $user;
+  $children = subuser_load_all($user);
+  if ((user_access('switch to subuser') && isset($children[$account->uid])) || (!empty($_SESSION['subuser_parent']) && $account->uid == $_SESSION['subuser_parent'])) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/*
+ * Implementation of hook_subuser_ui_data_alter().
+ */
+function subuser_switch_subuser_ui_data_alter(&$data) {
+  $data['header']['switch'] = array(
+    'data' => t('Switch'),
+    'class' => 'switch',
+  );
+
+  foreach ($data['rows'] as $key => &$row) {
+    $row['switch'] = array(
+      'data' => l('Switch', sprintf('user/%s/switch', $key)),
+      'class' => 'switch',
+    );
+  }
+}
+
+/**
+ * Switch to the active user to another account.
+ *
+ * After switching the user will be redirected to /user and the parent user
+ * will be stored in $_SESSION['subuser_parent'].
+ *
+ * @param $account
+ *   The user account to switch to.
+ */
+function subuser_switch_user($account) {
+  global $user;
+
+  if ($user->uid) {
+    module_invoke_all('user_logout', $user);
+  }
+  if (!isset($_SESSION['subuser_parent']) || $account->uid != $_SESSION['subuser_parent']) {
+    $parent = $user->uid;
+  }
+
+  $user = $account;
+  drupal_session_regenerate();
+  $edit = array();
+  user_module_invoke('login', $edit, $user);
+
+  if (isset($parent)) {
+    $_SESSION['subuser_parent'] = $parent;
+    drupal_goto('user');
+  }
+  unset($_SESSION['subuser_parent']);
+  drupal_goto('user/' . $user->uid . '/subuser');
+}
+
+/**
+ * Implements hook_menu_link_alter().
+ *
+ * @see subuser_switch_translated_menu_link_alter()
+ */
+function subuser_switch_menu_link_alter(&$item) {
+  // Allow the logout link to be altered.
+  if ($item['link_path'] == 'user/logout') {
+    $item['options']['alter'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ */
+function subuser_switch_translated_menu_link_alter(&$item, $map) {
+  // If currently running as a child user change the "Log out" link to
+  // "Log out (return)".
+  if ($item['href'] == 'user/logout' && !empty($_SESSION['subuser_parent'])) {
+    $item['title'] = t('Log out (return)');
+    $item['href'] = 'subuser/switch/' . $_SESSION['subuser_parent'];
+  }
+}

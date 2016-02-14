@@ -1,0 +1,30 @@
+<?php
+/**
+ * @file
+ * Install file for setting up things
+ * on install - and cleaning up on uninstall.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function any_menu_path_uninstall() {
+  // Clean up our variables on uninstall.
+  variable_del('any_menu_path');
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function any_menu_path_update_7101() {
+  $any_menu_path_items = variable_get('any_menu_path', array());
+
+  foreach ($any_menu_path_items as $mlid) {
+    db_update('menu_links')
+      ->fields(array('external' => 1))
+      ->condition('mlid', $mlid)
+      ->execute();
+  }
+
+  return 'Fixed Any Menu Path items that had disappeared from the menu overview.';
+}
