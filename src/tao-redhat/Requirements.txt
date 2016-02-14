@@ -1,0 +1,41 @@
+# tao-redhat | 
+TAO "RED CAPS" Challenge:
+
+Summary:
+  "The Red Caps current data collection process is handwritten notes on a
+  scratch pad, along with data entry on log sheets in the office at the end of
+  each shift. Since all data is on paper, it limits the opportunity for the
+  information to be shared with our community and evaluated by stakeholders.
+  A more efficient data collection process would enable the Red Caps to spend
+  more time out and about in the Downtown District. It would also provide more
+  data to drive decisions by policy makers."
+
+  Problem: The Red Caps provide value to the community from 6th to 11th and
+  from Lincoln to Pearl Street. Their current data collection process is
+  handwritten notes on a scratch pad, along with data entry on log sheets in
+  the office at the end of each shift. Since all data is on paper, it limits the
+  opportunity for the information to be shared with our community and evaluated
+  by stakeholders. A more efficient data collection process would enable the
+  Red Caps to spend more time out and about in the Downtown District. It would
+  also provide more data to drive decisions by policy makers.
+
+  Challenge: Give some love to the Red Caps by way of technology that can enable
+  easy and efficient collection of data through a mobile interface.The data
+  collected: way-finding, meet and greets, escorting employees to their vehicles
+  after dark, responding to emergency calls, reports of vandalism, locking and
+  unlocking buildings for property and business owners and security checks.
+  Then enable a reporting interface or data export mechanism so that the data
+  can be used for the benefit of our community, to identify trends, and to also
+  shine a light on the hard work of the Red Caps.
+
+Goals:
+  1: Eliminate paper by use of mobile Application
+  2: A public website to get information to the public faster
+  3: Reporting tools to help analyze reports to identify trends
+*/
+
+* Instead of mongo - dynamodb
+* Second AWS instance for node api
+* AWS Lambda - check out free offering
+
+
