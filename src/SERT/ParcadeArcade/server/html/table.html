@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Alive Listeners</title>
+</head>
+
+<body>
+  <table border="1">
+    <tr>
+      <th>Name</th>
+      <th>Capabilities</th>
+      <th>Last Used</th>
+    </tr>
+    {{#each info}}
+    <tr>
+      <td>{{this.name}}</td>
+      <td>{{this.capabilities}}</td>
+      <td>{{this.time}}</td>
+    </tr>
+    {{/each}}
+  </table>
+</body>
+
+</html>
