@@ -1,0 +1,57 @@
+{
+  "name": "15th-night",
+  "authors": [
+    "Jeremy Sher <OverlappingElvis@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.0",
+    "angular-ui-router": "^0.2.18",
+    "bootstrap": "^3.3.6",
+    "AdminLTE": "admin-lte#^2.3.2",
+    "underscore": "^1.8.3",
+    "font-awesome": "fontawesome#^4.5.0",
+    "angular-resource": "^1.5.0",
+    "jquery": "^2.2.0",
+    "jquery-ui": "^1.11.4",
+    "angular-ui-mask": "^1.7.2",
+    "moment": "^2.11.2",
+    "angular-bootstrap": "^1.1.2"
+  },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "dist/css/bootstrap.css",
+        "dist/css/bootstrap-theme.css",
+        "js/dropdown.js",
+        "js/collapse.js"
+      ]
+    },
+    "AdminLTE": {
+      "main": [
+        "dist/css/AdminLTE.css",
+        "dist/css/skins/skin-green.min.css",
+        "dist/js/app.js"
+      ]
+    },
+    "font-awesome": {
+      "main": [
+        "css/font-awesome.css",
+        "fonts/*"
+      ]
+    }
+  }
+}
