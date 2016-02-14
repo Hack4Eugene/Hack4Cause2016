@@ -1,0 +1,24 @@
+<br><br>
+
+<h1><img class="confirm-icon" src="/thumbs.png" alt="">CONFIRMATION</h1>
+<p class="tall">Thank you for responding to help an at-risk youth!</p> 
+<p>Here is the relevant information again: {{info}}</p><br>
+<h3>Next Steps:</h3>
+<p><b>You can get in contact with this youth by either calling or emailing.</b> <br></p> 
+<p class="supertall">
+	<b> - Phone: {{phone}}</b><br>
+	<b> - Email:</b> <a href="mailto:{{email}}">{{email}}</a>
+</p>
+<p> <em>If you cannot call right away, please send them quick email with your contact information.</em></p>
+<form action="/msg" method="POST">
+	<input type="hidden" id="loc" name="location">
+	<input type="hidden" name="email" value="nwpointer@gmail.com">
+	<textarea class="form-control" name="message" rows="5">optional message:</textarea>
+	<br>
+	<input class="btn btn-lg btn-primary" type="submit" value="send optional email message">
+</form>
+
+<script>
+	$('#loc').attr("value", window.location.href);
+</script>
+

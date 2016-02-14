@@ -1,0 +1,55 @@
+{{!-- login:
+<form id="login">
+	<input type="text" name="login" value="sally@gmail.com">
+	<input type="password" name="password" value="password">
+	<input type="submit">
+</form> --}}
+
+<form class="form-signin" id="login">
+<h2 class="form-signin-heading">Please sign in</h2>
+<label for="inputEmail" class="sr-only">Email address</label>
+<input type="email" name="login" class="form-control" placeholder="Email address" required="" autofocus="" value="sally@gmail.com" style="border-radius:4px 4px 0px 0px !important;">
+<label for="inputPassword" class="sr-only">Password</label>
+<input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required="" value="password" style="border-radius:0px 0px 4px 4px !important; position:relative; top:.1em;">
+<br>
+<button id="submitbtn" class="btn btn-lg btn-primary btn-block" type="submit">Sign In</button>
+<div>
+	<a href="/resetPassword" class="btn btn-lg btn-rnd btn-block text-center">Reset Password</a>
+</div>
+</form>
+
+<div id="msg"></div>
+	<script>
+
+	$( "#login" ).submit(function( event ) {
+		var res =  $( this ).serializeArray();
+		event.preventDefault();
+		// $("#submitbtn").html("loading...");
+		$("#submitbtn").html("loading");
+		setInterval(function(){
+			$("#submitbtn").append(".");
+		},600)
+		UserApp.User.login({ "login": res[0].value, "password": res[1].value }, function(error, result) {
+		    if (error) {
+		        // Something went wrong...
+		        // Check error.name. Might just be a wrong password?
+		        console.log(error);
+		        $('#msg').html(error.message)
+		    } else if (result.locks && result.locks.length > 0) {
+		        $('#msg').html('locked')
+		    } else {
+		        // User is logged in, save result.token in a cookie called 'ua_session_token'
+		        // console.log(UserApp.User());
+		        console.log(result);
+		        UserApp.setToken(result.token);
+		        UserApp.User.get({},function(error,result){
+		        	setCookie("nightAdmin", result[0].permissions.admin.value, 1);
+		        })
+		        setCookie("nightUserToken", result.token, 1);
+		        
+		        window.location.href = '/request/'+ result.token
+		    }
+		});
+	 
+	});
+	</script>

@@ -1,0 +1,40 @@
+<br>
+<h1 class="text-center">Member invite</h1>
+<br>
+<form id="signup" action="/msg" method="POST" class="col-md-8 col-md-offset-2">
+	<label for="usr">Name:*</label>
+	<input required="true" type="text" placeholder="Jame Doe" name="email" class="form-control" id="usr">
+	<br>
+	<label for="usr">Email:*</label>
+	<input required="true" type="email" placeholder="name@mail.com" name="email" class="form-control" id="usr">
+	<br>
+	<label for="usr">Optional message:</label>
+	<textarea class="form-control" id="message" name="message" rows="5" placeholder="message body"></textarea>
+	<br><br>
+	<input type="hidden" id="loc" name="location">
+	<input type="hidden" name="subject" value="You've been invited to join the 15th night network">
+	<input type="hidden" name="addendum" value="Your password is password">
+	<input type="hidden" id="password" name="">
+	<input class="btn btn-lg btn-primary" type="submit" value="send invite">
+</form>
+
+<script>
+$('#loc').attr("value", window.location.href);
+$( "#signup" ).submit(function( event ) {
+	// event.preventDefault();
+	var res =  $( this ).serializeArray();
+	console.log(res);
+	
+	UserApp.User.save({
+	  "first_name": res[0].value,
+	  "email": res[1].value,
+	  "login": res[1].value,
+	  "password": "password"
+	}, function(err, res){
+	 	console.log(err, res);
+	});
+ 	
+});
+
+
+</script>

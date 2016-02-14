@@ -1,0 +1,123 @@
+.supertall {
+	font-size: 24px;
+}
+
+.tall {
+	font-size: 18px;
+}
+
+.container-narrow {
+  margin: 0 auto;
+  max-width: 700px;
+}
+.container-narrow > hr {
+  margin: 30px 0;
+}
+*{
+/*	max-height: 100vh;*/
+}
+
+#login, .narrowForm{
+	max-width: 300px;
+	margin:auto;
+	padding-top:10%;
+}
+
+header{
+	background: rgb(0,0,22);
+	color:white;
+	line-height: 7rem;
+	font-size: 2rem;
+}
+
+body{
+	color:white;
+	font-family: 'Varela Round', sans-serif;
+	background: rgb(10,27,55);
+}
+
+.collapseable{
+	background: rgba(255,255,255,.05);
+	padding:1rem;
+}
+
+h3{
+	/*border-bottom:1px solid rgba(255,255,255,.1);*/
+	line-height: 3rem;
+}
+
+/*.panel-body{
+	color:black;
+}*/
+
+#request{
+	/*position: relative;*/
+/*	overflow: scroll;
+	height: 85vh;*/
+}
+#sticker{
+	background: rgb(10,27,55);
+	box-shadow: 0px -10px 20px rgb(10,27,55);
+	width: 100%; 
+	position:fixed;
+	bottom:0px;
+	left:0px;
+	padding:2rem;
+}
+
+.panel-title, .panel, .pannel-default, .panel-heading{
+	background: rgba(0,0,0,0) !important;
+	border: none;
+}
+.panel-heading{
+	border-bottom: 1px solid rgba(0,0,0,.2) !important;
+}
+.panel-body{
+	background: rgba(0,0,0,.2);
+	border-top:0px !important;
+}
+
+.panel-title{
+	color:white;
+}
+
+h3 input{
+	display: none;
+}
+
+#logo{
+	max-width: 100%;
+	margin:auto;
+	float:none;
+	display: inherit;
+}
+
+.emoji{
+	height: 3rem;
+	margin-right:1rem;
+	position: relative;
+	top:-.25rem;
+}
+
+.btn-rnd{
+	border-radius: 10000px;
+}
+.btn-center{
+	margin: auto;
+	width: 250px;
+	text-align: center
+}
+
+b{
+	color:white;
+}
+p{
+	color:rgba(255,255,255,.5);
+}
+
+.confirm-icon{
+	height: 6rem;
+	position: relative;
+	top: -1.70rem;
+	margin-right: 1rem;
+}
