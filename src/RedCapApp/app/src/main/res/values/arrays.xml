@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="am_types">
+        <item>Locked/Unlocked Door</item>
+        <item>Give Directions</item>
+        <item>Recommend Business</item>
+        <item>Escort to Car/Bus</item>
+        <item>Welcomed New Storefront</item>
+        <item>Checked on Business</item>
+        <item>Incident Follow-up</item>
+    </string-array>
+
+    <string-array name="inc_types">
+        <item>Trespass</item>
+        <item>Grafitti</item>
+        <item>Vandalism</item>
+        <item>Indecent Exposure</item>
+        <item>Drug Use</item>
+        <item>Public Intoxication</item>
+        <item>Altercation</item>
+    </string-array>
+
+</resources>

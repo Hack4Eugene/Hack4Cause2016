@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Name of Business:"
+        android:textSize="24dp"
+        android:id="@+id/location"
+        android:layout_weight=".4"
+        android:layout_gravity="center_horizontal|bottom"
+        android:gravity="bottom|left" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/am_business"
+        android:layout_weight=".2"
+        android:gravity="center_vertical"
+        android:textSize="24dp"
+        style="@android:style/Widget.Holo.EditText"
+        android:layout_gravity="center_vertical" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Service Type:"
+        android:id="@+id/am_category"
+        android:textSize="24dp"
+        android:layout_weight=".3" />
+
+    <Spinner
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/am_type_spinner"
+        android:entries="@array/am_types"
+        android:spinnerMode="dropdown"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Comments:"
+            android:id="@+id/textView3"
+            android:textSize="24dp"
+            android:layout_weight=".2" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/am_comments"
+            android:textSize="18dp"
+            android:layout_weight=".8" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="90dp"
+        android:id="@+id/am_submit"
+        android:layout_weight=".8"
+        android:src="@drawable/redcapbuttonsubmit" />
+
+</LinearLayout>
