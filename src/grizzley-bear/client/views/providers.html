@@ -1,0 +1,35 @@
+<section class="content">
+	<div class="row">
+		<div ng-class="('providers' | isState) ? 'col-md-12' : 'col-md-3'">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">All Providers</h3>
+					<div class="box-tools pull-right">
+						<a class="btn btn-box-tool" ui-sref="providers.edit">
+							<span class="glyphicon glyphicon-plus"></span>
+						</a>
+					</div>
+				</div>
+				<div class="box-body table-responsive">
+					<table class="table table-hover" ng-if="providers.length">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Contact</th>
+								<th>Category</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="provider in providers | orderBy:'name'" ui-sref="providers.edit({ id: provider.id })">
+								<td>{{provider.name}}</td>
+								<td>{{provider.contact_person}}</td>
+								<td>{{provider.category}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9" ui-view></div>
+	</div>
+</section>

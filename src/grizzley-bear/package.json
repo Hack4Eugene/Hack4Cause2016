@@ -1,0 +1,44 @@
+{
+  "name": "15th-night",
+  "version": "1.0.0",
+  "main": "server/server.js",
+  "scripts": {
+    "pretest": "jshint ."
+  },
+  "dependencies": {
+    "compression": "^1.0.3",
+    "cors": "^2.5.2",
+    "errorhandler": "^1.1.1",
+    "loopback": "^2.14.0",
+    "loopback-boot": "^2.6.5",
+    "loopback-datasource-juggler": "^2.19.0",
+    "serve-favicon": "^2.0.1",
+    "tropo-webapi": "^1.2.0"
+  },
+  "optionalDependencies": {
+    "loopback-explorer": "^1.1.0"
+  },
+  "devDependencies": {
+    "bower": "^1.7.7",
+    "grunt": "^0.4.5",
+    "grunt-angular-templates": "^1.0.3",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-clean": "^0.7.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-htmlmin": "^0.6.0",
+    "grunt-contrib-uglify": "^0.11.1",
+    "grunt-string-replace": "^1.2.1",
+    "grunt-usemin": "^3.1.1",
+    "jshint": "^2.5.6",
+    "load-grunt-tasks": "^3.4.0",
+    "wiredep": "^3.0.0"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "description": "15th-night",
+  "license": "MIT"
+}
