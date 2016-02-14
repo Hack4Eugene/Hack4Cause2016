@@ -1,0 +1,21 @@
+{
+	"recent_reports": [{
+		"id": 789,
+		"lat": 44.049776,
+		"lng": -123.0909595,
+    "type":"transient",
+    "impact":1
+	}, {
+		"id": 321,
+		"lat": 44.049776,
+		"lng": -123.0909595,
+    "type":"transient",
+    "impact":1
+	}, {
+		"id": 543,
+		"lat": 44.049776,
+		"lng": -123.0909595,
+    "type":"transient",
+    "impact":1
+	}]
+}
