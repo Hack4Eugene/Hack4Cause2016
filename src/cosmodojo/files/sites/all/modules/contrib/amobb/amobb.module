@@ -1,0 +1,205 @@
+<?php
+/**
+ * @file
+ * Module for connecting Achievements to Mozilla Open Badges Backpack.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function amobb_menu() {
+  $items['amobb/assertions/%/%'] = array(
+    'title' => 'Assertions',
+    'page callback' => 'amobb_assertions',
+    'page arguments' => array(2, 3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/config/people/amobb'] = array(
+    'title' => 'Achievements to Mozilla Open Badges Bridge',
+    'description' => 'Configure default settings for the Achievements to Mozilla Open Badges Bridge module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('amobb_settings_form'),
+    'access arguments' => array('access administration pages'),
+  );
+  return $items;
+}
+
+/**
+ * Form constructor for the AMOBB Settings form.
+ *
+ * Path: admin/config/system/amobb
+ *
+ * @see amobb_menu()
+ * @see amobb_settings_form_validate()
+ * @see amobb_settings_form_submit()
+ * @ingroup forms
+ */
+function amobb_settings_form($form, $form_state) {
+  $form['issuer'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Issuer Data',
+  );
+  global $base_root;
+  $form['issuer']['amobb_issuer_origin'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Origin',
+    '#default_value' => variable_get('amobb_issuer_origin', $base_root),
+    '#required' => TRUE,
+  );
+  $form['issuer']['amobb_issuer_name'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Name',
+    '#default_value' => variable_get('amobb_issuer_name', variable_get('site_name', '')),
+    '#required' => TRUE,
+  );
+  $form['issuer']['amobb_issuer_org'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Organization',
+    '#default_value' => variable_get('amobb_issuer_org', variable_get('site_name', '')),
+    '#required' => TRUE,
+  );
+  $form['issuer']['amobb_issuer_contact'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Contact',
+    '#default_value' => variable_get('amobb_issuer_contact', variable_get('site_mail', '')),
+    '#required' => TRUE,
+  );
+  $form['amobb_salt'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Salt',
+    '#default_value' => variable_get('amobb_salt', 'mybadge!'),
+    '#required' => TRUE,
+    '#description' => t('Include a salt for hashing the recipient\'s email address.'),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+  );
+  return $form;
+}
+
+/**
+ * Form submission for the AMOBB Settings form.
+ *
+ * @see amobb_menu()
+ * @see amobb_settings_form()
+ * @see amobb_settings_form_submit()
+ * @ingroup forms
+ */
+function amobb_settings_form_validate($form, $form_state) {
+  if (!valid_url($form_state['values']['amobb_issuer_origin'], TRUE)) {
+    form_set_error('amobb_issuer_origin', t('You have not provided a valid origin URL.'));
+  }
+}
+
+/**
+ * Form submission for the AMOBB Settings form.
+ *
+ * @see amobb_menu()
+ * @see amobb_settings_form()
+ * @see amobb_settings_form_validate()
+ * @ingroup forms
+ */
+function amobb_settings_form_submit($form, $form_state) {
+  // Set module variables to reflect submitted items.
+  system_settings_form_submit($form, $form_state);
+}
+
+/**
+ * Return json assertions for unlocked achievements.
+ *
+ * @param string $achievement_url
+ *   A specific achievement title to check the unlock status of.
+ * @param int $uid
+ *   The user this request applies against (defaults to current user).
+ *
+ * @return array
+ *   One of the following, based on the passed parameters:
+ *   - If the $uid has not unlocked $achievement_id, return empty badge.
+ *   - If $achievement_url is unlocked, return the formatted badge assertion.
+ */
+function amobb_assertions($achievement_url, $uid) {
+  // Load the user from $uid.
+  $user = user_load($uid);
+  // Convert $achievement_url to a normal achievement title.
+  $achievement_name = urldecode($achievement_url);
+  // Load all unlocked achievements for the user.
+  $unlocks = achievements_unlocked_already(NULL, $uid);
+  // Load all achievements.
+  $achievements = achievements_load(NULL, FALSE);
+  // Cycle through all achievements and find the one that matches the url if
+  // it is unlocked.
+  foreach ($achievements as $key => $achievement) {
+    if (isset($unlocks[$key]) && $achievement['title'] == $achievement_name) {
+      global $base_root;
+      // It appears that the Open Badges api isn't set yet on required values,
+      // but here's what we have for now.
+      $salt = variable_get('amobb_salt', 'mybadge!');
+      $hash = 'sha256$' . hash('sha256', $user->mail . $salt);
+      // Use the correct image file, depending on what is set.
+      if (isset($achievement['images']['badge'])) {
+        // Use the larger badge image if supplied.
+        $image = $achievement['images']['badge'];
+      }
+      elseif (isset($achievement['images']['unlocked'])) {
+        // Otherwise use the unlock image.
+        $image = $achievement['images']['unlocked'];
+      }
+      else {
+        // Use default image.
+        $image = variable_get('achievements_image_unlocked', '');
+        if (substr($image,-4,4) != '.png') {
+          // No valid image was found.
+          watchdog('amobb', t('No valid image was found'), array(), WATCHDOG_INFO);
+          break;
+        }
+      }
+      // Build the assertion.
+      $assertion = array(
+        'recipient' => $hash,
+        'salt' => $salt,
+        'badge' => array(
+          'version' => '0.5.0',
+          'name' => $achievement['title'],
+          'description' => $achievement['description'],
+          'criteria' => url('achievements/leaderboard/' . $key, array('absolute' => TRUE)),
+          'image' => url($image, array('absolute' => TRUE)),
+          'issuer' => array(
+            'origin' => variable_get('amobb_issuer_origin', $base_root),
+            'name' => variable_get('amobb_issuer_name', variable_get('site_name', '')),
+            'org' => variable_get('amobb_issuer_org', variable_get('site_name', '')),
+            'contact' => variable_get('amobb_issuer_contact', variable_get('site_mail', '')),
+          ),
+        ),
+      );
+      // Return the assertion as JSON.
+      drupal_json_output($assertion);
+      return;
+    }
+  }
+  // If the user doesn't have the badge or the badge doesn't exist, return
+  // empty array.
+  $assertion = array(
+    'badge' => array(
+      'name' => 'No badge',
+    ),
+  );
+  drupal_json_output($assertion);
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function amobb_page_build(&$page) {
+  $account = menu_get_object('user', 1);
+  global $user;
+  // Check to see if you are on the user achievements page.
+  if ($account && $user->uid == $account->uid && current_path() == 'user/' . $account->uid . '/achievements') {
+    // Add all our necessary javascript settings and files.
+    drupal_add_js('http://beta.openbadges.org/issuer.js', 'external');
+    global $base_root;
+    drupal_add_js(array('uid' => $user->uid, 'baseRoot' => $base_root), 'setting');
+    drupal_add_js(url(drupal_get_path('module', 'amobb')) . '/amobb.js');
+  }
+}

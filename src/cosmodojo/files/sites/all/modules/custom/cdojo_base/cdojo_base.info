@@ -1,0 +1,16 @@
+name = cdojo_base
+core = 7.x
+package = Features
+dependencies[] = context
+dependencies[] = ctools
+dependencies[] = panels_mini
+dependencies[] = strongarm
+features[context][] = sitewide
+features[ctools][] = context:context:3
+features[ctools][] = panels_mini:panels_default:1
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[panels_mini][] = footer
+features[variable][] = theme_adminimal_settings
+features[variable][] = theme_coder_dojo_civicrm_settings
+features[variable][] = theme_coder_dojo_settings

@@ -1,0 +1,205 @@
+<?php
+
+define('SUBUSER_ITEMS_PER_PAGE', 50);
+
+/**
+ * Implements hook_menu().
+ */
+function subuser_ui_menu() {
+  $items = array();
+
+  $items['user/%user/subuser'] = array(
+    'title' => t('Subusers'),
+    'page callback' => 'subuser_ui_list_page',
+    'page arguments' => array(1),
+    'access callback' => 'subuser_ui_access_list_page_callback',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+return $items;
+}
+
+/**
+ * Our access callback for subuser list viewing - only permits users
+ * with 'view subusers' to view user or parent-user to view subusers
+ *
+ * @param $account
+ *   the account whos list is being viewed (user object or uid)
+ */
+function subuser_ui_access_list_page_callback($account) {
+  global $user;
+  $acct_uid = is_object($account) ? $account->uid : $account;
+
+  // Never allow access to view the anonymous user account.
+  if ($acct_uid) {
+    // Admins can view all, users can view own profiles at all times.
+    if ($user->uid == $acct_uid || user_access('administer users') || (user_access('view subusers', $user))) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/*
+ * @param $account
+ *   the account whose list is beign viewed (user object or uid)
+ */
+function subuser_ui_list_page($account) {
+  $edit_access = FALSE;
+  $delete_access = FALSE;
+
+  $edit_header = array();
+  $delete_header = array();
+  $data = array();
+
+  $suids = subuser_load_all($account);
+
+  // Return empty message if no subusers found
+  if (empty($suids)) {
+    return t("User doesn't have any subusers.");
+  }
+
+  foreach ($suids as $suid) {
+    //Load subuser
+    $subuser = user_load($suid);
+
+    $values[] = $subuser;
+    $users_roles = array();
+
+    $roles = array_map('check_plain', user_roles(TRUE)); 
+    foreach ($subuser->roles as $rid => $user_role) {
+      $users_roles[] = $roles[$rid];
+    }
+    asort($users_roles);
+
+    $data['rows'][$subuser->uid] = array(
+      'name' => array(
+        'data' => $subuser->name,
+        'class' => 'name',
+      ),
+      'mail' => array(
+        'data' => $subuser->mail,
+        'class' => 'mail',
+      ),
+      'roles' => array(
+        'data' => theme('item_list',array('items' => $users_roles)),
+        'class' => 'roles',
+      ),
+      'access' => array(
+        'data' =>  $subuser->access ? t('@time ago', array('@time' => format_interval(REQUEST_TIME - $subuser->access))) : t('never'),
+        'class' => 'access',
+      ),
+      'status' => array(
+        'data' => ($subuser->status ? t('Active') : t('Blocked')),
+        'class' => 'status',
+      ),
+    );
+
+    // Test users access to edit subuser
+    if (subuser_access_edit_callback($subuser->uid)) {
+      $data['rows'][$subuser->uid]['edit'] = array(
+        'data' => l(t('Edit'), sprintf('user/%s/edit', $subuser->uid)),
+        'class' => 'edit',
+      );
+      $edit_access = TRUE;
+    }
+
+    // Test users access to delete subuser
+    if (subuser_access_delete_callback($subuser->uid)) {
+      $data['rows'][$subuser->uid]['delete'] = array(
+        'data' => l(t('Delete'), sprintf('user/%s/cancel', $subuser->uid)),
+        'class' => 'delete',
+      );
+      $delete_access = TRUE;
+    }
+  }
+
+  // If user had access to edit any user, add header for it
+  if ($edit_access) {
+    $edit_header = array(
+      'data' => t('Edit'),
+      'class' => 'edit',
+    );
+  }
+
+  // If user had access to delete any user, add header for it
+  if ($delete_access) {
+    $delete_header = array(
+      'data' => t('Delete'),
+      'class' => 'delete',
+    );
+  }
+
+  // 
+  $data['header'] = array(
+    'name' => array(
+      'data' => t('Name'),
+      'class' => 'name',
+    ),
+    'mail' => array(
+      'data' => t('Mail'),
+      'class' => 'mail',
+    ),
+    'roles' => array(
+      'data' => t('Roles'),
+      'class' => 'roles',
+    ),
+    'access' => array(
+      'data' => t('Last access'),
+      'class' => 'access',
+    ),
+    'status' => array(
+      'data' => t('Status'),
+      'class' => 'status',
+    ),
+    'edit' => $edit_header,
+    'delete' => $delete_header,
+  );
+
+  $data['per_page'] = SUBUSER_ITEMS_PER_PAGE;
+
+  // Add possibility to alter data
+  drupal_alter('subuser_ui_data', $data);
+  
+  // Initialize the pager
+  $current_page = pager_default_initialize(count($data['rows']), $data['per_page']);
+  // Split your list into page sized chunks
+  $chunks = array_chunk($data['rows'], $data['per_page'], TRUE);
+
+  // Create table listing from data
+  $table = theme('table', array('header' => $data['header'], 'rows' => $chunks[$current_page]));
+
+  // Output themed table
+  $output = theme('subuser_list_item', array('content' => $table, 'values' => $values));
+  // Output pager
+  $output .= theme('pager', array('quantity',count($data['rows'])));
+
+  return $output;
+}
+
+/*
+ * Implementation of hook_theme().
+ */
+function subuser_ui_theme() {
+  return array(
+    'subuser_list_item' => array(
+      'variables' => array(
+        'content' => NULL,
+        'values' => NULL,
+      ),
+    ),
+  );
+}
+
+function theme_subuser_list_item($variables) {
+  return theme('html_tag', array(
+    'element' => array(
+      '#tag' => 'div',
+      '#attributes' => array(
+        'class' => 'subuser_listing',
+      ),
+      '#value' => $variables['content'],
+    ),
+  ));
+}

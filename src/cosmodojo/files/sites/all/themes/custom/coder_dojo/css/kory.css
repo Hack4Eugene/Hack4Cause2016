@@ -1,0 +1,142 @@
+/**
+ * Kory's CoderDojo custom css
+ */
+
+.session-wrap {
+	padding: 0 75px;
+	position: relative;
+}
+.cal-icons {
+	padding: 6px 0 0 0;
+	border: 1px black solid;
+	border-radius: 3px;
+	background: white;
+	font-size: 1.2em;
+	text-align: center;
+	margin: auto;
+	margin-bottom: 10px;
+	float: left;
+}
+.cal-icons h6 {
+	font-weight: bold;
+	text-transform: uppercase;
+	margin: 0 0 5px;
+}
+.cal-icons span {
+	display: block;
+	background-color: #ffba00;
+	padding: 12px;
+	font-weight: bold;
+}
+#btn-row .cal-icons {
+	width: calc;
+	width: -moz-calc;
+	padding: 6px 0 0 0;
+	background-color: white;
+	border-radius: 3px;
+}
+.session-list .cal-icons {
+	width: 90px;
+}
+#btn-row .cal-icons span {
+	background-color: rgba(51, 153, 51, 0.8);
+}
+.session-list li + li {
+	margin-top: 30px;
+	padding-top: 30px;
+	border-top: 1px solid black;
+	// width: 100%;
+}
+.session-list p {
+	font-size: 1.25em;
+	line-height: 1.25em;
+}
+.session-list .btn {
+    float: right;
+    position: absolute;
+    right: 75px;
+    bottom: 10px;
+    background: rgba(51, 153, 51, 0.8);
+    font-size: 0.8em;
+    -webkit-transition: all 0.3s ease-out;  /* Android 2.1+, Chrome 1-25, iOS 3.2-6.1, Safari 3.2-6  */
+	transition: all 0.3s ease-out;  /* Chrome 26, Firefox 16+, iOS 7+, IE 10+, Opera, Safari 6.1+  */
+}
+.session-list .btn:hover {
+    background: rgba(51, 153, 51, 1);
+}
+.session-list .btn a {
+    color: white;
+}
+#event-buttons {
+	margin-top: 25px;
+	text-align: left;
+}
+footer .btn {
+	margin-left: 0;
+}
+footer .btn + .btn {
+	margin-left: 20px;
+}
+
+@media screen and (max-width: 500px) {
+	.session-wrap {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+	.session-list .btn {
+		right: 15px;
+	}
+	footer .btn {
+		margin-bottom: 15px;
+	}
+	footer .btn + .btn {
+		margin-left: 0;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	.navbar-nav {
+		width: 100%;
+		margin: 0;
+	}
+	.navbar-nav li {
+		padding: 0;
+	}
+	.session-list li {
+		width: 100%;
+	}
+}	
+
+@media screen and (max-width: 1029px) {
+	footer .view-featured-session .container {
+		width: 100%;
+	}
+}
+
+@media screen and (min-width: 600px) {
+	
+}
+
+@media screen and (min-width: 768px) {
+	#event-buttons {
+		margin-top: 10px;
+		text-align: right;
+	}
+}
+
+@media screen and (min-width: 992px) {
+	.session-list li + li {
+		margin-top: 0;
+		padding-top: 0;
+		border-top: none;
+		// width: inherit;
+	}
+}
+
+@media screen and (min-width: 1090px) {
+	
+}
+
+@media screen and (min-width: 1200px) {
+	
+}

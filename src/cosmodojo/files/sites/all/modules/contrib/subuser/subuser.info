@@ -1,0 +1,15 @@
+name = Subuser
+description = Allows users to create other users based on permissions and optionally store a parent-child relationship. PATCHED - this module has been patched, do not update it withotu check the issues noted and making sure the new version contains that functionality or re-patched the module afterwards. Cord Slatton-Valle 2/7/16 - https://www.drupal.org/node/2509978#comment-10257663. I also added the ability to have parent users cc'd when the subuser user gets an email.
+package = User
+core = 7.x
+dependencies[] = relation
+dependencies[] = ctools
+recommends[] = subuser_switch
+recommends[] = subuser_ui
+
+; Information added by Drupal.org packaging script on 2014-11-26
+version = "7.x-2.0-alpha4"
+core = "7.x"
+project = "subuser"
+datestamp = "1417041781"
+

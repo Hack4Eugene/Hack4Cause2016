@@ -1,0 +1,15 @@
+.footer-sponsor-list img {
+   width: auto;
+   height: 100px;
+}
+
+.footer-sponsor-list li {
+   padding: 0 15px;
+   margin-bottom: 25px;
+}
+
+.list-inline .row ul {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
