@@ -1,0 +1,182 @@
+/**
+ * Coder Dojo custom css
+ */
+
+body.navbar-tray-open{
+    padding-top: 80px !important;
+}
+.navbar-collapse{
+    padding-left: 0;
+    padding-right: 0;
+}
+.btn-lg{
+    font-size: 18px;
+}
+
+/* NAV*/
+header#navbar {
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-radius: 0;
+	padding: 5px 15px !important;
+	top: 0;
+	min-height: 0;
+}
+
+@media screen and (min-width: 800px) {
+    .navbar-administration header#navbar.navbar-fixed-top{
+        margin-bottom: 50px;
+        top: 39px;
+    }
+    .navbar-administration.navbar-tray-open header#navbar.navbar-fixed-top{
+        margin-bottom: 100px;
+        top: 80px;
+    }
+}
+
+ .navbar .logo {
+ 	max-width: 185px;
+ 	margin: 7px 0 0 0;
+ }
+ .navbar .logo img {
+ 	width: 100%;
+ }
+ .navbar-toggle .icon-bar {
+ 	width: 29px;
+ 	height: 4px;
+ 	border-radius: 0px;
+ 	background-color: white !important;
+ }
+.navbar-nav {
+	margin-top: 12px;
+}
+.navbar-nav li {
+	padding-right: 4px;
+	padding-left: 4px;
+}
+.navbar .nav > li > a {
+	margin-left: 0;
+}
+
+body .navbar-default .navbar-nav > li > a:hover,
+body .navbar-default .navbar-nav > li > a:focus {
+	background-color: rgba(51, 153, 51, 0.8) !important;
+}
+body .navbar-default .navbar-nav > li ul{
+    background-color: #2e7ac7;
+}
+
+
+.active-trail .active {
+	min-height: 0 !important;
+}
+.main-container{
+    padding-bottom: 30px;
+}
+.label{
+    color: #666666;
+}
+.panels-flexible-row + .panels-flexible-row {
+	margin-top: 50px;
+}
+.staff-list li + li {
+	margin-top: 50px;
+}
+.staff-list h3 {
+	margin-top: 0;
+}
+.staff-list img {
+	margin-bottom: 20px;
+}
+#event-text {
+	font-size: 1.3em !important;
+	line-height: 1.3em !important;
+}
+#btn-row .row + #btn-row .row {
+	margin-top: 20px;
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+	#navbar {
+		padding-top: 28px !important;
+	}
+	.navbar-header {
+		margin-right: auto;
+		margin-left: auto;
+		float: none;
+		text-align: center;
+	}
+	.navbar .logo {
+		left: 50%;
+		position: relative;
+		margin-left: -135px;
+	}
+	.navbar-nav {
+		width: 100%;
+		text-align: center;
+	}
+	.navbar-nav > li {
+		display: inline-block;
+		float: none;
+	}
+	.navbar .nav > li > a {
+		font-size: 1.65em !important;
+	}
+}
+
+@media screen and (min-width: 600px) {
+	#event-text {
+		font-size: 1.55em !important;
+		line-height: 1.55em !important;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.navbar .logo {
+		max-width: 264px;
+		margin-top: 2px;
+	}
+	.navbar-nav {
+		float: right;
+	}
+	.navbar-nav li {
+		padding-right: 0;
+		padding-left: 0;
+	}
+	.staff-list img {
+		margin-bottom: 0;
+	}
+	#event-text {
+		font-size: 2em !important;
+		line-height: 1.9em !important;
+	}
+}
+
+@media screen and (min-width: 992px) {
+	.navbar .nav > li > a {
+		font-size: 1.6em !important;
+	}
+}
+
+@media screen and (min-width: 1090px) {
+	.navbar .nav > li > a {
+		font-size: 2em !important;
+	}
+}
+
+@media screen and (min-width: 1200px) {
+	/* NAV*/
+	 .navbar.container-fluid > .container-fluid, 
+	 .navbar.container > .container {
+	 	margin: 0 auto;
+	 	/*width: inherit;*/
+	 }
+	 .navbar .nav > li > a {
+	 	font-size: 2.2em !important;
+	 }
+	 #event-text {
+	 	font-size: 2.2em !important;
+	 	line-height: 2em !important;
+	 }
+}

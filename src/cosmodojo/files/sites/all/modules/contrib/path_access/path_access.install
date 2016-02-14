@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * Implementats of hook_schema().
+ */
+function path_access_schema() {
+  $schema['path_access'] = array(
+    'fields' => array(
+      'pid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'rid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'pages' => array(
+        'type' => 'text',
+      ),
+      'visibility' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'rid' => array('rid'),
+    ),
+    'primary key' => array('pid'),
+  );
+  return $schema;
+}
+
+/**
+ * Update 6100: Set {path_access}.pid SERIAL NOT NULL AUTO_INCREMENT.
+ */
+function path_access_update_6100() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {path_access} CHANGE pid pid SERIAL NOT NULL AUTO_INCREMENT");
+  return $ret;
+}
+
+/**
+ * Update 7100: Increase path_access' weight so that its the last thing that runs.
+ */
+function path_access_update_7100() {
+  db_update('system')
+    ->fields(array('weight' => 1001))
+    ->condition('name', 'path_access')
+    ->execute();
+}
+
+/**
+ * Implements hook_install().
+ */
+function path_access_install() {
+  db_update('system')
+    ->fields(array('weight' => 1001))
+    ->condition('name', 'path_access')
+    ->execute();
+}

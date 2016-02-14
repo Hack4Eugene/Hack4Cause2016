@@ -1,0 +1,8 @@
+<?php /* Smarty version 2.6.27, created on 2016-02-14 08:32:47
+         compiled from string:%7Bstrip%7D%7Bts+1%3D%24event.event_title%7DEvent+Registration+Cancelled+for+%251%7B/ts%7D%0A%7B/strip%7D */ ?>
+<?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'string:{strip}{ts 1=$event.event_title}Event Registration Cancelled for %1{/ts}
+{/strip}', 1, false),array('block', 'ts', 'string:{strip}{ts 1=$event.event_title}Event Registration Cancelled for %1{/ts}
+{/strip}', 1, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><?php echo ''; ?><?php $this->_tag_stack[] = array('ts', array('1' => $this->_tpl_vars['event']['event_title'])); $_block_repeat=true;smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><?php echo 'Event Registration Cancelled for %1'; ?><?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?><?php echo ''; ?>
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

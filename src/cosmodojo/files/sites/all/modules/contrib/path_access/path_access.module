@@ -1,0 +1,215 @@
+<?php
+
+/**
+ * @file
+ * Restricts access to any Drupal path on a per-role basis.
+ *
+ * @author: Mike Carter <www.ixis.co.uk>
+ * @author: CSÉCSY László <boobaa.no@spam.kybest.hu>
+ * @author: Chris Burgess (@grobot) <www.giantrobot.co.nz>
+ * @author: Tom Kirkpatrick (@mrfelton) <tom@systemseed.com>
+ * @usage: ?q=admin/config/people/pathaccess to configure path restrictions for each role.
+ */
+
+/**
+ * Show this block on every page except the listed pages.
+ */
+define('PATH_ACCESS_VISIBILITY_NOTLISTED', 0);
+
+/**
+ * Show this block on only the listed pages.
+ */
+define('PATH_ACCESS_VISIBILITY_LISTED', 1);
+
+/**
+ * Implements hook_help().
+ */
+function path_access_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/people/pathaccess':
+      return t('Each user role can be granted or denied access to any url paths. This is a crude but straight forward way to restrict groups of nodes/pages to certain users using only the paths associated with the pages. Page access is not limited to node pages only, anything can be controlled using paths.');
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function path_access_menu_alter(&$items) {
+  foreach ($items as $path => &$item) {
+    chain_menu_access_chain($items, $path, '_path_access_check_permission');
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function path_access_menu() {
+  $items = array();
+
+  $items['admin/config/people/pathaccess'] = array(
+    'title' => t('Path Access'),
+    'description' => t('Define what paths a user role can access.'),
+    'page callback' => 'path_access_admin_roles',
+    'access arguments' => array('administer permissions'),
+  );
+  $items['admin/config/people/pathaccess/edit/%user_role'] = array(
+    'title' => t('configure role paths'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('path_access_admin_configure_form', 5),
+    'access arguments' => array('administer permissions'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Access callback; patch access check.
+ */
+function _path_access_check_permission() {
+  global $user;
+  
+  // User #1 has all privileges:
+  if ($user->uid == 1) {
+    return 1;
+  }
+
+  foreach ($user->roles as $k => $v) {
+    $role = $k;
+  }
+
+  $visibility = PATH_ACCESS_VISIBILITY_LISTED;
+  $pages = '';
+  $result = db_query('SELECT pages, visibility FROM {path_access} WHERE rid = :role', array( ':role' => $role ));
+  foreach ($result as $role) {
+    $pages .= $role->pages . "\n";
+    $visibility = $role->visibility && $visibility;
+  }
+  $visibility = ($visibility > 0) ? PATH_ACCESS_VISIBILITY_LISTED : PATH_ACCESS_VISIBILITY_NOTLISTED;
+
+  // Match path if necessary.
+  if ($pages) {
+    // Convert path to lowercase. This allows comparison of the same path
+    // with different case. Ex: /Page, /page, /PAGE.
+    $pages = drupal_strtolower($pages);
+    // Convert the Drupal path to lowercase
+    $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+    // Compare the lowercase internal and lowercase path alias (if any).
+
+    $page_match = drupal_match_path($path, $pages);
+    if ($path != $_GET['q']) {
+      $page_match = $page_match || drupal_match_path($_GET['q'], $pages);
+    }
+        
+    // When $visibility has a value of 0 (PATH_ACCESS_VISIBILITY_NOTLISTED),
+    // the block is displayed on all pages except those listed in $pages.
+    // When set to 1 (PATH_ACCESS_VISIBILITY_LISTED), it is displayed only on
+    // those pages listed in $pages.
+    $page_match = !($visibility xor $page_match);
+  }
+  else {
+    $page_match = TRUE;
+  }
+
+  // Check that the current page is not a protected page before blocking user.
+  if (!$page_match && !path_access_protected_pages($path)) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+/**
+ * Menu callback; displays the path access configuration form.
+ */
+function path_access_admin_roles() {
+  // Render the role overview.
+  $result = db_query('SELECT * FROM {role} ORDER BY name');
+  $table['header'] = array(t('User Role'), t('Operations'));  
+  foreach ($result as $role) {
+    $table['rows'][] = array($role->name, l(t('edit'), 'admin/config/people/pathaccess/edit/' . $role->rid));
+  }
+  $output = theme('table', $table);
+
+  return $output;
+}
+
+/**
+ * Define role access form.
+ */
+function path_access_admin_configure_form($form, &$form_state, $role) {
+
+  $settings = db_query('SELECT * FROM {path_access} pa INNER JOIN {role} r ON pa.rid = r.rid WHERE pa.rid = :rid', array(':rid' => $role->rid))->fetchObject();
+
+  // Set up the database entry ready for updating.
+  if (!$settings) {
+    db_query("INSERT INTO {path_access} (rid, pages, visibility) VALUES (:rid, '', 0)", array(':rid' => $role->rid));
+  }
+
+  drupal_set_title(t("Path access for '@role' role", array('@role' => $role->name)));
+
+  $form['page_vis_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Page specific visibility settings'),
+    '#collapsible' => FALSE,
+  );
+  $form['page_vis_settings']['visibility'] = array(
+    '#type' => 'radios',
+    '#title' => t('Allow users to view specific pages'),
+    '#options' => array(t('Access every page except the listed pages.'), t('Access only the listed pages.')),
+    '#default_value' => !empty($settings->visibility)? $settings->visibility : '',
+  );
+  $form['page_vis_settings']['pages'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Pages'),
+    '#default_value' =>!empty($settings->pages)? $settings->pages : '',
+    '#description' => t("Enter one page per line as a path. The '*' character is a wildcard. Example paths are '<em>blog</em>' for the blog page and '<em>blog/*</em>' for every personal blog. '<em>&lt;front&gt;</em>' is the front page."),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save path access'),
+  );
+  $form['rid'] = array(
+    '#type' => 'value', 
+    '#value' => $role->rid
+  );
+
+  return $form;
+}
+
+/**
+ * Validate role access form submission.
+ */
+function path_access_admin_configure_form_validate($form_id, &$form_state) {
+  if ( $form_state['values']['visibility'] == 0 ) {
+    // Prevent protected pages from being listed.
+    $pages = explode("\n", $form_state['values']['pages']);
+    foreach ( $pages as $page ) {
+      if ( path_access_protected_pages($page) ) {
+        form_set_error('pages', t('You cannot block access to the %protected page.', array('%protected' => $page)));
+      }
+    }
+  }
+  // else ... do we *require* that each protected page be visible?
+}
+
+/**
+ * Process role access form submission
+ */
+function path_access_admin_configure_form_submit($form_id, &$form_state) {
+  db_query("UPDATE {path_access} SET visibility = :visibility, pages = :pages WHERE rid = :rid", array(':rid' => $form_state['values']['rid'], ':visibility' => $form_state['values']['visibility'], ':pages' => $form_state['values']['pages']));
+  menu_cache_clear_all();
+  drupal_set_message(t('The path access configuration has been saved.'));
+  $form_state['redirect'] = 'admin/config/people/pathaccess';
+}
+
+/**
+ * Protected Pages can never be restricted using path_access.
+ *
+ * @TODO This should be a variable_get() so it's customisable per-site.
+ */
+function path_access_protected_pages($page) {
+  $pages = array(
+    'user/logout',
+  );
+  return in_array($page, $pages);
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the cdojo_media feature.
+ */
+
+include_once 'cdojo_media.features.inc';

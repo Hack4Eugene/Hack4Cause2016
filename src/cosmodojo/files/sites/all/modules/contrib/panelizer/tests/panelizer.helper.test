@@ -1,0 +1,23 @@
+<?php
+/**
+ * @file
+ * Test integration for the panelizer module.
+ */
+
+/**
+ * This will be extended by other tests to simplify them and make the code more
+ * reusable.
+ */
+class PanelizerTestHelper extends DrupalWebTestCase {
+
+  /**
+   * {@inheritdoc}
+   */
+  function setUp(array $modules = array()) {
+    $modules[] = 'ctools';
+    $modules[] = 'panels';
+    $modules[] = 'panelizer';
+    parent::setUp($modules);
+  }
+
+}
