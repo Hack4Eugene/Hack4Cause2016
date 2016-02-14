@@ -1,0 +1,14 @@
+name = Achievements to Mozilla Open Badges Bridge
+description = "Allows achievements to be sent to Mozilla's Open Badges Backpack."
+stylesheets[all][] = amobb.css
+package = Achievements
+dependencies[] = achievements
+configure = admin/config/people/amobb
+core = 7.x
+
+; Information added by drupal.org packaging script on 2012-06-11
+version = "7.x-1.2"
+core = "7.x"
+project = "amobb"
+datestamp = "1339444177"
+

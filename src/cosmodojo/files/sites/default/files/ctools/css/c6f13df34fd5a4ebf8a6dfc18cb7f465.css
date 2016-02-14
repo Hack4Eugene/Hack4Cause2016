@@ -1,0 +1,93 @@
+.panels-flexible-11 .panels-flexible-region {
+  padding: 0;
+}
+
+.panels-flexible-11 .panels-flexible-region-inside {
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+}
+
+.panels-flexible-11 .panels-flexible-region-inside-first {
+  padding-left: 0;
+}
+
+.panels-flexible-11 .panels-flexible-region-inside-last {
+  padding-right: 0;
+}
+
+.panels-flexible-11 .panels-flexible-column {
+  padding: 0;
+}
+
+.panels-flexible-11 .panels-flexible-column-inside {
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+}
+
+.panels-flexible-11 .panels-flexible-column-inside-first {
+  padding-left: 0;
+}
+
+.panels-flexible-11 .panels-flexible-column-inside-last {
+  padding-right: 0;
+}
+
+.panels-flexible-11 .panels-flexible-row {
+  padding: 0 0 0.5em 0;
+  margin: 0;
+}
+
+.panels-flexible-11 .panels-flexible-row-last {
+  padding-bottom: 0;
+}
+
+.panels-flexible-column-11-main {
+  float: left;
+  width: 99.0000%;
+}
+
+.panels-flexible-11-inside {
+  padding-right: 0px;
+}
+
+.panels-flexible-11 {
+  width: auto;
+}
+
+.panels-flexible-region-11-top {
+  float: left;
+  width: 99.0000%;
+}
+
+.panels-flexible-row-11-1-inside {
+  padding-right: 0px;
+}
+
+.panels-flexible-region-11-financial___right {
+  float: left;
+  width: 29.6438%;
+}
+
+.panels-flexible-region-11-center {
+  float: left;
+  width: 69.3562%;
+}
+
+.panels-flexible-row-11-main-row-inside {
+  padding-right: 0px;
+}
+
+.panels-flexible-region-11-other {
+  float: left;
+  width: 69.2768%;
+}
+
+.panels-flexible-region-11-other___right {
+  float: left;
+  width: 29.7232%;
+}
+
+.panels-flexible-row-11-2-inside {
+  padding-right: 0px;
+}
+

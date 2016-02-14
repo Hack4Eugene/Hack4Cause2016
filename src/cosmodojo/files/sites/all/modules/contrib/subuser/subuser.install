@@ -1,0 +1,86 @@
+<?php
+/**
+ * @file
+ * Provides installation functions.
+ *
+ * @author Jimmy Berry ("boombatower", http://drupal.org/user/214218)
+ */
+
+/**
+ * Implementation of hook_enable().
+ */
+function subuser_enable() {
+  // Check if our field is not already created.
+  if (!field_info_field('field_subuser_limit')) {
+    $field = array(
+        'field_name' => 'field_subuser_limit',
+        'type' => 'text',
+    );
+    field_create_field($field);
+
+    // Create the instance on the bundle.
+    $instance = array(
+        'field_name' => 'field_subuser_limit',
+        'entity_type' => 'user',
+        'label' => 'Subuser Limit',
+        'bundle' => 'user',
+        'settings' => array(
+          // Here you inform either or not you want this field showing up on the registration form.
+          'user_register_form' => 1,
+        ),
+        'widget' => array(
+          'type' => 'textfield',
+        ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function subuser_uninstall() {
+  variable_del('subuser_list');
+  variable_del('subuser_relation');
+
+  // Delete field_subuser_limit from user entity
+  if ($instance = field_info_instance('user', 'field_subuser_limit', 'user')) {
+    field_delete_instance($instance);
+  }
+}
+
+/**
+ * Clear cache
+ */
+function subuser_update_7201() {
+}
+
+/**
+ * Adds field_subuser_limit field instance.
+ */
+function subuser_update_7202() {
+  // Check if our field is not already created.
+  if (!field_info_field('field_subuser_limit')) {
+    $field = array(
+        'field_name' => 'field_subuser_limit',
+        'type' => 'text',
+    );
+    field_create_field($field);
+
+    // Create the instance on the bundle.
+    $instance = array(
+        'field_name' => 'field_subuser_limit',
+        'entity_type' => 'user',
+        'label' => 'Subuser Limit',
+        'bundle' => 'user',
+        'settings' => array(
+          // Here you inform either or not you want this field showing up on the registration form.
+          'user_register_form' => 1,
+        ),
+        'widget' => array(
+          'type' => 'textfield',
+        ),
+    );
+    field_create_instance($instance);
+  }
+}

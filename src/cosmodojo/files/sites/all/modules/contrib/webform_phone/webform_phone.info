@@ -1,0 +1,14 @@
+name = Webform Phone Number
+description = "Phone Field type for webform."
+package = "Webform"
+dependencies[] = webform
+dependencies[] = phone (1.x)
+files[] = webform_phone.module
+core = 7.x
+
+; Information added by Drupal.org packaging script on 2015-09-05
+version = "7.x-1.23"
+core = "7.x"
+project = "webform_phone"
+datestamp = "1441473543"
+

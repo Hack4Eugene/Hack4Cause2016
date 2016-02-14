@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * implements hook_achievements_info
+ *
+ * Define an achievement.
+ *
+ * This hook describes your achievements to the base module so that it can
+ * create the pages and caches necessary for site-wide display. The base
+ * module doesn't know how to unlock any of your achievements... instead, you
+ * use Drupal's existing hooks, the achievement storage tables, and a few
+ * helper functions to complete the workflow. See the remaining documentation
+ * in this file for further code samples.
+ *
+ * There are many different kinds of achievements, and it's accurate enough to
+ * say that if you can measure or respond to an action, it can be made into a
+ * matching achievement. Be creative. Look at what others are doing. Have fun.
+ * Your gamification efforts will fail or be un-fun if you don't have a gamer
+ * helping you, if you make everything a mindless grind, or if you simply
+ * copy achievements from another site or install.
+ *
+ * @return
+ *   An array whose keys are internal achievement IDs (32 chars max) and whose
+ *   values identify properties of the achievement. These properties are:
+ *   - title: (required) The title of the achievement.
+ *   - description: (required) A description of the achievement.
+ *   - points: (required) How many points the user will earn when unlocked.
+ *   - images: (optional) An array of (optional) keys 'locked', 'unlocked',
+ *     and 'secret' whose values are image file paths. Achievements exist in
+ *     three separate display states: unlocked (the user has it), locked (the
+ *     user doesn't have it), and secret (the user doesn't have it, and the
+ *     achievement is a secret). Each state can have its own default image
+ *     associated with it (which administrators can configure), or achievements
+ *     can specify their own images for one, some, or all states.
+ *   - storage: (optional) If you store statistics for your achievement, the
+ *     core module assumes you've used the achievement ID for the storage
+ *     location. If you haven't, specify the storage location here. This lets
+ *     the core module know what to delete when an administrator manually
+ *     removes an achievement unlock from a user. If your achievement
+ *     tracks statistics that are NOT set with achievements_storage_get()
+ *     or _set, you don't have to define the 'storage' key.
+ *   - secret: (optional) The achievement displays on a user's Achievements
+ *     tab but does not reveal its title, description, or points until the
+ *     user has unlocked it. Compatible with 'invisible'.
+ *   - invisible: (optional) The achievement does NOT display on a user's
+ *     Achievements tab, but does show up on the leaderboards when necessary.
+ *     Compatible with 'secret' (i.e., if another user has unlocked an
+ *     invisible achievement, a user who has not unlocked it will see the
+ *     placeholder secret text instead of the actual achievement itself).
+ *   - manual-only: (optional) Set this to TRUE if the achievement has no
+ *     automated way of being granted--meaning only a user with the `grant manual
+ *     achievements` can grant the achievement (or take it away).
+ *
+ *   Achievements can also be categorized into groups. Groups are simply
+ *   arrays whose keys are internal group IDs and whose values identify
+ *   the 'title' of the group as well as the array of 'achievements' that
+ *   correspond to that group. If some achievements are within a group and
+ *   some achievements are without a group, the groupless achievements will
+ *   automatically be placed into a "Miscellany" category.
+ */
+function cdojo_achievements_achievements_info() {
+    $achievements = array(
+        'student-badges' => array(
+            'title' => t('Student Badges'),
+            'achievements' => array(
+                'test-student-badge' => array(
+                    'title'       => t('Test Student Badge'),
+                    'description' => t("Badge for testing student achievements"),
+                    'points'      => 0,
+                    /*'images' => array(
+                        'unlocked'  => 'sites/default/files/example1.png',
+                        'locked'    => 'sites/default/files/example2.png',
+                        'secret'    => 'sites/default/files/example3.png',
+                    ),*/
+                ),
+            ),
+        ),
+        'instructor-badges' => array(
+            'title' => t('Instructor Badges'),
+            'achievements' => array(
+                'test-instructor-badge' => array(
+                    'title'       => t('Test Instructor Badge'),
+                    'description' => t("Badge for testing instructor achievements"),
+                    'points'      => 0,
+                    /*'images' => array(
+                        'unlocked'  => 'sites/default/files/example1.png',
+                        'locked'    => 'sites/default/files/example2.png',
+                        'secret'    => 'sites/default/files/example3.png',
+                    ),*/
+                ),
+            ),
+        ),
+    );
+
+    return $achievements;
+}

@@ -1,0 +1,503 @@
+<?php
+/**
+ * @file
+ * Provides primary Drupal hook implementations.
+ *
+ * @author Jimmy Berry ("boombatower", http://drupal.org/user/214218)
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function subuser_permission() {
+  $permissions = array(
+    'administer subusers' => array(
+      'title' => t('Administer subusers'),
+      'description' => t('Allows a user to administer subusers.'),
+    ),
+    'view subusers' => array(
+      'title' => t('View subusers'),
+      'description' => t('Allows a user to view subusers.'),
+    ),
+    'edit subusers' => array(
+      'title' => t('Edit subusers'),
+      'description' => t('Allows a user to edit subusers.'),
+    ),
+    'delete subusers' => array(
+      'title' => t('Delete subusers'),
+      'description' => t('Allows a user to delete subusers.'),
+    ),
+    'override subuser relation' => array(
+      'title' => t('Override relation'),
+      'description' => t('Override the default for subuser_relation field which determines if a relation should be stored.'),
+    ),
+    'show hidden subuser roles' => array(
+          'title' => t('Show hidden subuser roles'),
+          'description' => t('Shows the roles normally marked as hidden.')
+    ),
+  );
+
+  // Provide a create subuser permission for each role.
+  foreach (user_roles(TRUE) as $rid => $role) {
+    $permissions['create subuser ' . $rid] = array(
+      'title' => t('Create an %role', array('%role' => $role)),
+    );
+  }
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function subuser_menu() {
+  $items = array();
+
+  $items['user/%user/subuser/create'] = array(
+    'title' => 'Add user',
+    'page callback' => 'drupal_goto',
+    'page arguments' => array('admin/people/create'),
+    'access callback' => 'subuser_access_create',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/people/subuser'] = array(
+      'title' => 'Subuser module settings',
+      'description' => 'Subuser settings page',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('subuser_admin'),
+      'access arguments' => array('administer subuser settings'),
+      'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function subuser_menu_alter(&$items) {
+  $items['admin/people/create']['access callback'] = 'subuser_access_create_callback';
+  $items['user/%user']['access callback'] = 'subuser_access_view_callback';
+  $items['user/%user/cancel']['access callback'] = 'subuser_access_delete_callback';
+  $items['user/%user/cancel/confirm/%/%']['access callback'] = 'subuser_access_delete_callback';
+  $items['user/%user/edit']['access callback'] = 'subuser_access_edit_callback';
+}
+
+/**
+ * Implements hook_profile2_access().
+ */
+function subuser_profile2_access($op, $profile = NULL, $account = NULL) {
+  global $user;
+  // Fall through if we're not checking access for the current user account
+  if ((!isset($account) || $account->uid == $user->uid) && isset($profile->uid)) {
+    switch ($op) {
+      case 'view':
+        if (subuser_access_view_callback($profile->uid)) {
+          return TRUE;
+        }
+        break;
+
+      case 'edit':
+        if (subuser_access_edit_callback($profile->uid)) {
+          return TRUE;
+        }
+        break;
+
+      case 'delete':
+        if (subuser_access_delete_callback($profile->uid)) {
+          return TRUE;
+        }
+    }
+    // Do not explicitly deny access so others may still grant access.
+  }
+}
+
+/**
+ * Check if an account has access to at least one create subuser permission.
+ *
+ * @param $account
+ *   (optional) The account to check, if not given use currently logged in user.
+ * @return
+ *   Boolean TRUE if the account has access to create a subuser.
+ */
+function subuser_access_create($account = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  foreach (user_roles(TRUE) as $rid => $role) {
+    if (user_access('create subuser ' . $rid, $account)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Our access callback for user editing - only permits users with
+ * 'edit subusers' to edit user or parent-user to edit subusers
+ *
+ * @param $account
+ *   the account being edited (user object or uid)
+ */
+function subuser_access_edit_callback($account) {
+  global $user;
+  $children = subuser_load_all($user);
+  $acct_uid = is_object($account) ? $account->uid : $account;
+
+  return (($user->uid == $acct_uid) || user_access('administer users') ||
+    (user_access('edit subusers') && in_array($acct_uid, $children))
+  ) && $acct_uid > 0;
+}
+
+/**
+ * Our access callback for user deleting - only permits users with
+ * 'delete subusers' to delete user or parent-user to delete subusers
+ *
+ * @param $account
+ *   the account being deleted (user object or uid)
+ */
+function subuser_access_delete_callback($account) {
+  global $user;
+  $children = subuser_load_all($user);
+  $acct_uid = is_object($account) ? $account->uid : $account;
+
+  return ((($user->uid == $acct_uid) && user_access('cancel account') ||
+           (user_access('delete subusers') && in_array($acct_uid, $children))
+         ) || user_access('administer users')) && $acct_uid > 0;
+}
+
+/**
+ * Our access callback for user viewing - only permits users with
+ * 'view subusers' to view user or parent-user to view subusers
+ *
+ * @param $account
+ *   the account being viewed (user object or uid)
+ */
+function subuser_access_view_callback($account) {
+  global $user;
+  $children = subuser_load_all($user);
+  $acct_uid = is_object($account) ? $account->uid : $account;
+
+  // Never allow access to view the anonymous user account.
+  if ($acct_uid) {
+    // Admins can view all, users can view own profiles at all times.
+    if ($user->uid == $acct_uid || user_access('administer users') ||
+      (user_access('view subusers', $user) && in_array($acct_uid, $children))
+    ) {
+      return TRUE;
+    }
+    elseif (user_access('access user profiles')) {
+      // At this point, load the complete account object.
+      if (!is_object($account)) {
+        $account = user_load((int) $acct_uid);
+      }
+      return (is_object($account) && $account->access && $account->status);
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Determine whether the user has a given privilege.
+ *
+ * If not subuser_access_create() is checked to determin if the permission
+ * should be grantted for the current request. The 'access callback' for
+ * admin/people/create is changed to this function which should be given the
+ * string 'administer users'.
+ *
+ * @param $string
+ *   The permission, such as "administer nodes", being checked for.
+ * @param $account
+ *   (optional) The account to check, if not given use currently logged in user.
+ * @return
+ *   Boolean TRUE if the current user has the requested permission.
+ */
+function subuser_access_create_callback($string, $account = NULL) {
+  global $user;
+  if (!isset($account)) {
+    $account = $user;
+  }
+  if(is_object($account)){
+    $user_loaded = $account;
+  }
+  else{
+    $user_loaded = user_load($account->uid);
+  }
+
+  $total_subusers = count(subuser_load_all($account));
+  $subuser_limit = field_get_items('user', $user_loaded, 'field_subuser_limit');
+  $max_subusers = '';
+
+  if (isset($subuser_limit[0]['value'])) {
+    $max_subusers = $subuser_limit[0]['value'];
+  }
+
+  drupal_alter('subuser_limit', $max_subusers, $user);
+
+  if (subuser_access_create($account) && ($max_subusers > $total_subusers || $max_subusers == '')) {
+    $static = &drupal_static('user_access');
+    $static[$account->uid][$string] = TRUE;
+  }
+
+  return user_access($string, $account);
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function subuser_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+  switch ($form_id) {
+    case 'user_account_form':
+    case 'user_profile_form':
+      if (!isset($form['account']) || $form['#user_category'] != 'account') {
+        return;
+      }
+      $account = $form['#user'];
+      // If the user does not have access to the roles field then filter the roles
+      // field based on subuser permissions and display if more then one left. If
+      // the user has 'administer permissions' then the #access will be set to TRUE
+      // and they will have access to all roles, otherwise if the user has access
+      // to this page through subuser then only provide them with the roles they
+      // are allowed based on subuser. All users will have at least one role, but
+      // that role may be 'authenticated user' which is not included in #options.
+      if (!$form['account']['roles']['#access']) {
+        $parents = subuser_load_all($account, FALSE);
+        if (user_access('edit subusers', $user) && in_array($user->uid, $parents)) {
+          foreach ($form['account']['roles']['#options'] as $rid => $role) {
+            if (!user_access('create subuser ' . $rid)) {
+              unset($form['account']['roles']['#options'][$rid]);
+            }
+          }
+          $form['account']['roles']['#access'] = count($form['account']['roles']['#options']) > 0;
+        }
+      }
+      // If the user either already had access or was granted access in the
+      // previous step, then remove any roles from the form that are supposed
+      // to be hidden.
+      if ($form['account']['roles']['#access']) {
+        // Strip out all of the hidden roles from the form.
+        subuser_remove_hidden_roles_from_form($form);
+
+        // Access should only be granted if there are actually any roles to grant access to, regardless of previously declared access.
+        $form['account']['roles']['#access'] = count($form['account']['roles']['#options']) > 0;
+      }
+
+      // Remove the limit user setting from users which do not have the
+      // administer subusers permissions.
+      $form['field_subuser_limit']['#access'] = user_access('administer subusers', $user);
+      array_unshift($form['#submit'], 'subuser_user_form_submit_preprocess');
+    break;
+    case 'user_register_form':
+      // Remove the limit user setting from users which do not have the
+      // administer subusers permissions.
+      $form['field_subuser_limit']['#access'] = user_access('administer subusers', $user);
+      $form['account']['roles']['#default_value'] = variable_get('subuser_default_roles', array(DRUPAL_AUTHENTICATED_RID => DRUPAL_AUTHENTICATED_RID));
+
+      // If the user either already had access or was granted access in the
+      // previous step, then remove any roles from the form that are supposed
+      // to be hidden.
+      if ($form['account']['roles']['#access']) {
+      // Strip out all of the hidden roles from the form.
+      subuser_remove_hidden_roles_from_form($form);
+
+      // Access should only be granted if there are actually any roles to grant access to, regardless of previously declared access.
+      $form['account']['roles']['#access'] = count($form['account']['roles']['#options']) > 0;
+      }
+
+      array_unshift($form['#submit'], 'subuser_user_form_submit_preprocess');
+    break;
+  }
+}
+
+/**
+ * Removes any hidden roles from the user form unless user has
+ * "show hidden subuser roles" permission.
+ *
+ * @param $form
+ *  A reference to an existing drupal form variable.
+ */
+function subuser_remove_hidden_roles_from_form(&$form) {
+  // Remove our hidden roles from the user edit form.
+  if (!user_access('show hidden subuser roles')) {
+    $hidden_roles = variable_get('subuser_hidden_roles', array());
+    foreach ($hidden_roles as $hidden_role) {
+      // If a hidden role is in the roles list, remove it.
+      if (isset($form['account']['roles']['#options'][$hidden_role])) {
+        unset($form['account']['roles']['#options'][$hidden_role]);
+      }
+      // This condition is necessary for "authenticated user" role, which is stored differently than all other roles.
+      elseif (isset($form['account']['roles'][$hidden_role])) {
+        unset($form['account']['roles'][$hidden_role]);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter(): user_register_form.
+ */
+function subuser_form_user_register_form_alter(&$form, &$form_state) {
+  global $user;
+
+  $form['subuser_relation'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('User relation'),
+    '#description' => t('Store a relationship that will allow for further management of the user.'),
+    '#default_value' => $user->uid && variable_get('subuser_relation', TRUE),
+    '#access' => $user->uid && user_access('override subuser relation'),
+  );
+
+  $form['#submit'][] = 'subuser_user_register_form_submit';
+}
+
+/**
+ * Preprocesses the submitted data from the user registration form.
+ */
+function subuser_user_form_submit_preprocess(&$form, &$form_state) {
+  // If we hide the default roles, then we need to auto-assign the subroles.
+  if (user_is_logged_in() && !user_access('show hidden subuser roles')) {
+    $roles = user_roles(TRUE);
+    $default_roles = variable_get('subuser_default_roles', array(DRUPAL_AUTHENTICATED_RID => DRUPAL_AUTHENTICATED_RID));
+    foreach ($roles as $rid => $role_title) {
+      if (user_access('create subuser ' . $rid) && $default_roles[$rid] > 0) {
+        $form_state['values']['roles'][$rid] = $roles[$rid];
+        }
+      else {
+        unset($form_state['values']['roles'][$rid]);
+      }
+    }
+  }
+}
+
+/**
+ * Additional submit handler for user_register_form.
+ */
+function subuser_user_register_form_submit($form, &$form_state) {
+  global $user;
+
+  // If the subuser relation is to be stored then create the relation.
+  if ($form_state['values']['subuser_relation']) {
+    $endpoints = array(
+      array('entity_type' => 'user', 'entity_id' => $form_state['user']->uid),
+      array('entity_type' => 'user', 'entity_id' => $user->uid),
+    );
+    $relation = relation_create('subuser', $endpoints);
+    relation_save($relation);
+  }
+}
+
+/**
+ * Load all related accounts.
+ *
+ * @param $account
+ *   The user account to which all other accounts will be related.
+ * @param $children
+ *   (Optional) Boolean TRUE to load children of account, otherwise FALSE to
+ *   load parent(s) of account.
+ * @return
+ *   An associative array of related accounts were key and value is user ID.
+ */
+function subuser_load_all($account, $children = TRUE) {
+  $related = &drupal_static(__FUNCTION__);
+
+  // Determine the index we need to look at based on the $children argument.
+  // The subuser relation has the child entity at index 0 and parent at 1. If
+  // $children is TRUE then we want to collect the uids from index 0, otherwise
+  // the uids from index 1.
+  $index = (int) !$children;
+
+  // Check to see if the related accounts are cached, otherwise load them.
+  if (!isset($related[$account->uid][$index])) {
+    // Select all user entities where the given account is either the parent or
+    // child based on the value of $children.
+    $results = relation_query('user', $account->uid, (int) $children)
+      ->entityCondition('bundle', 'subuser')
+      ->execute();
+
+    // Loop over results and collect uids.
+    $uids = array();
+    foreach ($results as $result) {
+      if ($relation = relation_load($result->rid, $result->vid)) {
+        $uids[$uid = (int) $relation->endpoints[LANGUAGE_NONE][$index]['entity_id']] = $uid;
+      }
+    }
+
+    // Store collected uids in static cache.
+    $related[$account->uid][$index] = $uids;
+  }
+
+  return $related[$account->uid][$index];
+}
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function subuser_ctools_plugin_api($module, $api) {
+  if ($module == 'relation' && $api == 'relation_type_default') {
+    return array('version' => 1);
+  }
+}
+
+/**
+ * Subuser administration page.
+ */
+function subuser_admin() {
+  $form = array();
+
+  $roles = user_roles(TRUE);
+
+  $default_roles = variable_get('subuser_default_roles', array(DRUPAL_AUTHENTICATED_RID => DRUPAL_AUTHENTICATED_RID));
+  if (!is_array($default_roles)) {
+    $default_roles = array(DRUPAL_AUTHENTICATED_RID => DRUPAL_AUTHENTICATED_RID);
+  }
+
+  $hidden_roles = variable_get('subuser_hidden_roles', array());
+  if (!is_array($hidden_roles)) {
+    $hidden_roles = array();
+  }
+
+  $form['subuser_default_roles'] = array(
+      '#title' => t('Default Subuser Roles'),
+      '#type' => 'checkboxes',
+      '#default_value' => $default_roles,
+      '#description' => t('The default roles of the subuser.'),
+      '#options' => $roles,
+  );
+  $form['subuser_hidden_roles'] = array(
+      '#title' => t('Hide Subuser Roles'),
+      '#type' => 'checkboxes',
+      '#default_value' => $hidden_roles,
+      '#description' => t('Hide selected roles during the registration process for all users without the "show hidden subuser roles" permission.'),
+      '#options' => $roles,
+  );
+  // Should parent be cc'd when subusers are sent mail?
+  $form['advanced']['subuser_cc_parent'] = array(
+      '#type' => 'select',
+      '#title' => t('CC parent when subusers are sent mail'),
+      '#options' => array(
+          0 => t('No'),
+          1 => t('Yes'),
+          ),
+      '#default_value' => variable_get('subuser_cc_parent', 0),
+    );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+function subuser_mail_alter(&$message) {
+  if (variable_get('subuser_cc_parent', 0)) {
+    $parent_uid = subuser_load_all($message['params']['account'], FALSE);
+    if(!empty($parent_uid)){
+      $parent = user_load($parent_uid);
+      $message['headers']['cc'] = $parent->mail;
+    }
+  }
+}

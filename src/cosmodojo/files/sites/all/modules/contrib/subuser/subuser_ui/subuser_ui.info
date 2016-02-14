@@ -1,0 +1,13 @@
+name = Subuser UI
+description = Provides the user interface for subuser module
+core = 7.x
+package = User
+
+dependencies[] = subuser
+
+; Information added by Drupal.org packaging script on 2014-11-26
+version = "7.x-2.0-alpha4"
+core = "7.x"
+project = "subuser"
+datestamp = "1417041781"
+
